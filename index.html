@@ -5,72 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Para mi Amor ❤️</title>
     <style>
-        body { background: #fff0f3; font-family: 'Georgia', serif; text-align: center; color: #ff4d6d; margin: 0; padding: 20px; }
+        body { background: #fff0f3; font-family: sans-serif; text-align: center; color: #ff4d6d; }
         
-        h1 { font-size: 1.5rem; margin-bottom: 10px; }
-
-        /* Tablero 4x4 */
+        /* El tablero */
         #puzzle {
             display: grid;
-            grid-template-columns: repeat(4, 1fr); /* 4 columnas */
-            width: 90vw; max-width: 400px;
-            height: 90vw; max-height: 400px;
+            grid-template-columns: repeat(3, 1fr); /* 3 columnas */
+            width: 90vw; max-width: 300px; /* Tamaño pequeño y fácil */
+            height: 90vw; max-height: 300px;
             margin: 20px auto;
             border: 5px solid white;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            background: white;
         }
 
         .piece {
-            border: 0.5px solid rgba(255,255,255,0.5);
-            background-image: url('mi_foto.png'); /* TU IMAGEN AQUÍ */
-            background-size: 400px 400px; /* Debe coincidir con el max-width */
+            border: 1px solid white;
+            background-image: url('mi_foto.png'); /* LINEA 21: EL NOMBRE DE TU FOTO */
+            background-size: 300px 300px;
             cursor: pointer;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
         }
 
-        /* Ajuste de escala para que la foto se vea bien en móviles */
-        @media (max-width: 400px) {
-            .piece { background-size: 90vw 90vw; }
-        }
+        .empty { background: #ffccd5; background-image: none; }
 
-        .empty { background: #ffe5ec; background-image: none; }
-
-        /* La carta de amor */
+        /* La carta que aparece al final */
         #carta {
             display: none;
-            padding: 25px;
+            padding: 20px;
             background: white;
-            margin: 20px auto;
-            max-width: 400px;
+            margin: 20px;
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            line-height: 1.6;
-            color: #444;
-            text-align: justify;
-            animation: aparecer 1s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            line-height: 1.5;
+            color: #333;
         }
-
-        @keyframes aparecer { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <h1>Para alguien muy especial ❤️</h1>
+    <h1>TE AMO MONSE ❤️</h1>
     <div id="puzzle"></div>
 
     <div id="carta">
-        <p style="text-align: center; font-size: 1.5rem;">❤️</p>
+        <p>❤️ <strong>Mi Mensaje para ti:</strong></p>
         <p id="mensaje"></p>
-        <p style="text-align: center;"><strong>Te amo más de lo que las palabras pueden explicar.</strong></p>
+        <p><strong>Te amo más de lo que las palabras pueden explicar.</strong></p>
     </div>
 
     <script>
-        const grid = 4;
-        const total = grid * grid;
-        let pieces = [...Array(total).keys()]; // [0, 1, 2... 15]
+        const grid = 3;
+        let pieces = [0, 1, 2, 3, 4, 5, 6, 7, 8];
         const texto = "Desde que llegaste a mi vida, todo tiene un brillo diferente. No sé cómo lo haces, pero con solo hablarme me cambias el ánimo, con solo mirarme me das paz. Me encanta tu sonrisa, tu forma de ser, tu manera de apoyarme incluso cuando yo mismo dudo. Contigo he aprendido que el amor no es solo palabras bonitas, sino detalles, paciencia, abrazos largos y momentos simples que se vuelven inolvidables. Gracias por estar conmigo, por elegirme, por creer en nosotros. Quiero seguir construyendo recuerdos a tu lado, seguir riendo, soñando y creciendo juntos. No prometo ser perfecto, pero sí prometo amarte con todo lo que soy y dar siempre lo mejor de mí.";
 
         function draw() {
@@ -78,45 +62,30 @@
             p.innerHTML = '';
             pieces.forEach((num, i) => {
                 const div = document.createElement('div');
-                div.className = 'piece' + (num === total - 1 ? ' empty' : '');
-                
-                if (num !== total - 1) {
-                    const x = (num % grid) * 100 / (grid - 1);
-                    const y = Math.floor(num / grid) * 100 / (grid - 1);
-                    div.style.backgroundPosition = `${x}% ${y}%`;
+                div.className = 'piece' + (num === 8 ? ' empty' : '');
+                if (num !== 8) {
+                    const x = (num % 3) * 50; 
+                    const y = Math.floor(num / 3) * 50;
+                    div.style.backgroundPosition = `-${x * 2}% -${y * 2}%`;
                 }
-                
                 div.onclick = () => move(i);
                 p.appendChild(div);
             });
         }
 
         function move(i) {
-            const empty = pieces.indexOf(total - 1);
-            const r = Math.floor(i / grid), c = i % grid;
-            const er = Math.floor(empty / grid), ec = empty % grid;
-
-            // Si la pieza está al lado del vacío
-            if (Math.abs(r - er) + Math.abs(c - ec) === 1) {
+            const empty = pieces.indexOf(8);
+            if ([i-1, i+1, i-3, i+3].includes(empty)) {
                 [pieces[i], pieces[empty]] = [pieces[empty], pieces[i]];
                 draw();
-                checkWin();
-            }
-        }
-
-        function checkWin() {
-            if (pieces.every((val, index) => val === index)) {
-                setTimeout(() => {
-                    document.getElementById('puzzle').style.display = 'none';
+                if (pieces.every((val, index) => val === index)) {
                     document.getElementById('carta').style.display = 'block';
                     document.getElementById('mensaje').innerText = texto;
-                    document.body.style.background = "#ff4d6d";
-                    document.body.style.color = "white";
-                }, 500);
+                    document.getElementById('puzzle').style.display = 'none';
+                }
             }
         }
 
-        // Mezclar piezas
         pieces.sort(() => Math.random() - 0.5);
         draw();
     </script>
